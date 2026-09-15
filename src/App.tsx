@@ -18,7 +18,11 @@ import {
   MessageCircle,
   ClipboardCheck,
   TrendingUp,
-  ChevronDown
+  ChevronDown,
+  ChevronLeft,
+  Calendar,
+  Flame,
+  Utensils
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
@@ -186,7 +190,7 @@ const Hero = () => {
                 ))}
               </div>
               <div className="text-sm">
-                <p className="font-bold text-stone-900">Más de 150 clientes satisfechos</p>
+                <p className="font-bold text-stone-900">Más de 200 clientes satisfechos</p>
                 <div className="flex text-amber-400">
                   {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
                 </div>
@@ -304,14 +308,33 @@ const Objectives = () => {
   );
 };
 
-const Survey = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+const Survey = ({ 
+  isOpen, 
+  onClose, 
+  defaultPlan 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  defaultPlan?: string | null;
+}) => {
   const [step, setStep] = React.useState(0);
-  const [formData, setFormData] = React.useState({});
+  const [formData, setFormData] = React.useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isOpen) {
+      if (defaultPlan) {
+        setFormData(prev => ({ ...prev, plan: defaultPlan }));
+      }
+    } else {
+      setStep(0);
+      setIsSubmitted(false);
+    }
+  }, [isOpen, defaultPlan]);
+
   const questions = [
-    { id: 'plan', label: '¿Qué plan has escogido?', type: 'select', options: ['Plan Básico', 'Plan Premium'] },
+    { id: 'plan', label: '¿Qué plan has escogido?', type: 'select', options: ['Plan Básico', 'Plan Premium', 'Reto TODO O NADA'] },
     { id: 'nombre', label: 'Nombre y Apellidos', type: 'text', placeholder: 'Tu nombre completo...' },
     { id: 'nacimiento', label: 'Fecha de nacimiento', type: 'date' },
     { id: 'motivo', label: 'Motivo de la consulta', type: 'textarea', placeholder: '¿Por qué buscas asesoría nutricional?' },
@@ -499,6 +522,240 @@ const Survey = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) =
   );
 };
 
+const ChallengeIntroModal = ({ 
+  isOpen, 
+  onClose, 
+  onAdvance 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onAdvance: () => void; 
+}) => {
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setCurrentSlide(0);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const slides = [
+    {
+      id: "portada",
+      title: "1. Cartel Oficial del Reto",
+      tag: "Presentación",
+      image: "https://i.postimg.cc/Xvhj00wn/70cf0a1b-3d4c-4a82-824a-32bf2cfd503f.jpg",
+      alt: "Cartel Oficial Reto Todo o Nada",
+      description: "Reto TODO O NADA • Duración 6 semanas"
+    },
+    {
+      id: "explicacion",
+      title: "2. ¿Qué incluye el Reto?",
+      tag: "Explicación Detallada",
+      image: "https://i.postimg.cc/sghKJYwK/3e4138e1-42ed-48aa-b518-1b02108c89a4.jpg",
+      alt: "Explicación detallada de lo que incluye el Reto Todo o Nada",
+      description: "Infografía completa con el contenido del reto, dietas y entrenamientos"
+    }
+  ];
+
+  const slide = slides[currentSlide];
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-stone-950/85 backdrop-blur-md">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-stone-900 text-stone-100 rounded-2xl sm:rounded-3xl max-w-4xl w-full shadow-2xl relative max-h-[96vh] flex flex-col overflow-hidden border border-stone-700/80"
+      >
+        {/* Línea decorativa superior */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 z-30" />
+
+        {/* Header Superior Profesional */}
+        <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 bg-stone-900/90 border-b border-stone-800 flex flex-col gap-3 relative z-20">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                <Flame size={18} className="fill-emerald-400" />
+              </span>
+              <div>
+                <h3 className="font-serif font-black text-base sm:text-xl text-white tracking-wide truncate">
+                  Reto TODO O NADA
+                </h3>
+                <p className="text-xs text-stone-400 hidden sm:block">
+                  Edición exclusiva de 6 semanas con plazas limitadas
+                </p>
+              </div>
+            </div>
+
+            {/* Botón Cerrar */}
+            <button 
+              onClick={onClose}
+              aria-label="Cerrar ventana"
+              className="text-stone-400 hover:text-white bg-stone-800/80 hover:bg-stone-800 p-2 sm:p-2.5 rounded-full border border-stone-700 transition-all shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Selector de pestañas + Resumen de datos clave */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            {/* Pestañas de Diapositiva */}
+            <div className="inline-flex p-1 bg-stone-950/80 rounded-xl border border-stone-800 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setCurrentSlide(0)}
+                className={cn(
+                  "flex-1 sm:flex-none text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5",
+                  currentSlide === 0 
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/40" 
+                    : "text-stone-400 hover:text-stone-200"
+                )}
+              >
+                <span>1. Cartel del Reto</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentSlide(1)}
+                className={cn(
+                  "flex-1 sm:flex-none text-xs sm:text-sm px-3.5 py-1.5 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5",
+                  currentSlide === 1 
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-950/40" 
+                    : "text-stone-400 hover:text-stone-200"
+                )}
+              >
+                <span>2. ¿Qué incluye? (Explicación)</span>
+              </button>
+            </div>
+
+            {/* Badges de características */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-[11px] sm:text-xs">
+              <span className="inline-flex items-center gap-1 bg-stone-800/90 text-emerald-300 border border-stone-700 px-2.5 py-1 rounded-md font-semibold">
+                <Clock size={12} className="text-emerald-400" />
+                6 semanas
+              </span>
+              <span className="inline-flex items-center gap-1 bg-stone-800/90 text-emerald-300 border border-stone-700 px-2.5 py-1 rounded-md font-semibold">
+                <Utensils size={12} className="text-emerald-400" />
+                1 dieta / 2 sem.
+              </span>
+              <span className="inline-flex items-center gap-1 bg-stone-800/90 text-stone-300 border border-stone-700 px-2.5 py-1 rounded-md font-semibold hidden md:inline-flex">
+                <Users size={12} className="text-stone-400" />
+                Nuevas inscripciones o renovaciones
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Visor Central de Imagen - Sin recortes, con scroll completo */}
+        <div className="relative flex-1 min-h-0 overflow-y-auto bg-stone-950 p-2 sm:p-5 flex flex-col items-center">
+          {/* Contenedor de la Imagen con fade suave */}
+          <div className="relative max-w-full flex flex-col items-center my-auto py-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={slide.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col items-center max-w-full"
+              >
+                <img 
+                  src={slide.image}
+                  alt={slide.alt}
+                  className="w-auto h-auto max-w-full max-h-[62vh] sm:max-h-[68vh] object-contain rounded-xl sm:rounded-2xl shadow-2xl border border-stone-800/90"
+                  referrerPolicy="no-referrer"
+                />
+                
+                {/* Texto de soporte para asegurar lectura completa */}
+                <p className="text-center text-[11px] text-stone-400 mt-2.5 font-medium flex items-center justify-center gap-1.5">
+                  <span>{slide.title}</span>
+                  <span className="text-stone-600">•</span>
+                  <span className="text-stone-500">Haz scroll si necesitas ver detalles</span>
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Flecha Lateral Izquierda */}
+          {currentSlide > 0 && (
+            <button
+              onClick={() => setCurrentSlide(0)}
+              aria-label="Ver cartel anterior"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-stone-900/90 hover:bg-stone-800 border border-stone-700 text-stone-200 hover:text-white flex items-center justify-center shadow-xl transition-all z-10"
+            >
+              <ChevronLeft size={22} />
+            </button>
+          )}
+
+          {/* Flecha Lateral Derecha */}
+          {currentSlide < slides.length - 1 && (
+            <button
+              onClick={() => setCurrentSlide(1)}
+              aria-label="Ver explicación siguiente"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-stone-900/90 hover:bg-stone-800 border border-stone-700 text-stone-200 hover:text-white flex items-center justify-center shadow-xl transition-all z-10"
+            >
+              <ChevronRight size={22} />
+            </button>
+          )}
+        </div>
+
+        {/* Barra de Acciones Inferior */}
+        <div className="p-3 sm:px-6 sm:py-4 bg-stone-900 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-20">
+          <div className="flex items-center gap-2.5 text-xs text-stone-300 w-full sm:w-auto justify-center sm:justify-start">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-emerald-400">50€</span>
+              <span className="text-xs line-through text-stone-500">60€</span>
+            </div>
+            <span className="text-stone-400">•</span>
+            <span className="text-[11px] sm:text-xs text-stone-300 bg-stone-800 px-2.5 py-1 rounded-md border border-stone-700">
+              Descuento hasta el 20 de septiembre
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            {currentSlide === 0 ? (
+              <>
+                <button 
+                  onClick={() => setCurrentSlide(1)}
+                  className="flex-1 sm:flex-none bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white py-3 sm:py-3 px-4 rounded-xl font-bold text-sm transition-all border border-stone-700 flex items-center justify-center gap-1.5"
+                >
+                  <span>Ver qué incluye</span>
+                  <ChevronRight size={16} />
+                </button>
+                <button 
+                  onClick={onAdvance}
+                  className="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white py-3 sm:py-3 px-5 sm:px-6 rounded-xl font-bold text-sm sm:text-base transition-all shadow-lg shadow-emerald-950/40 flex items-center justify-center gap-2"
+                >
+                  <span>Ir al Cuestionario</span>
+                  <ArrowRight size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => setCurrentSlide(0)}
+                  className="bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white py-3 px-3.5 rounded-xl font-bold text-sm transition-all border border-stone-700 flex items-center justify-center gap-1 shrink-0"
+                >
+                  <ChevronLeft size={16} />
+                  <span>Volver al Cartel</span>
+                </button>
+                <button 
+                  onClick={onAdvance}
+                  className="flex-1 sm:flex-none bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white py-3 sm:py-3 px-6 sm:px-7 rounded-xl font-black text-sm sm:text-base transition-all shadow-xl shadow-emerald-950/40 flex items-center justify-center gap-2 active:scale-[0.99] border border-emerald-500/40"
+                >
+                  <span>Continuar al Reto</span>
+                  <ArrowRight size={18} className="animate-pulse" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 const WelcomeModal = ({ isOpen, onClose, onStartSurvey }: { isOpen: boolean; onClose: () => void; onStartSurvey: () => void }) => {
   if (!isOpen) return null;
 
@@ -570,7 +827,7 @@ const WelcomeModal = ({ isOpen, onClose, onStartSurvey }: { isOpen: boolean; onC
   );
 };
 
-const Pricing = ({ onSelectPlan }: { onSelectPlan: () => void }) => {
+const Pricing = ({ onSelectPlan }: { onSelectPlan: (planName?: string) => void }) => {
   const plans = [
     {
       name: "Plan Básico",
@@ -584,6 +841,7 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: () => void }) => {
         "Resolución de dudas"
       ],
       recommended: false,
+      isSpecial: false,
       buttonText: "Elegir Plan Básico"
     },
     {
@@ -593,13 +851,33 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: () => void }) => {
       features: [
         "Incluye todo lo del Plan Básico, además de:",
         "Plan de entrenamiento personalizado",
-        "Adaptado a tu nivel y material disponible (gimnasio o casa)",
-        "Progresión estructurada para mejorar fuerza y físico",
+        "Adaptado a tu nivel y material (gimnasio o casa)",
+        "Progresión estructurada para fuerza y físico",
         "Ajustes de entrenamiento y nutrición según evolución",
         "Seguimiento más completo"
       ],
       recommended: true,
+      isSpecial: false,
       buttonText: "Elegir Plan Premium"
+    },
+    {
+      name: "Reto TODO O NADA",
+      price: "50",
+      originalPrice: "60",
+      period: "6 semanas",
+      discountNotice: "Descuento a 50€ solo hasta el 20 de septiembre",
+      features: [
+        "Duración de 6 semanas completas",
+        "Dietas 100% personalizadas (1 dieta cada 2 semanas)",
+        "Rutina de entrenamiento adaptada a tu nivel y material",
+        "Solo para nuevas inscripciones o renovaciones",
+        "Seguimiento online continuo",
+        "Resolución de dudas y feedback constante",
+        "Todo adaptado a tus objetivos y preferencias"
+      ],
+      recommended: false,
+      isSpecial: true,
+      buttonText: "Unirme al Reto TODO O NADA"
     }
   ];
 
@@ -611,55 +889,152 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: () => void }) => {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-serif mb-4 text-stone-900">Planes Mensuales</h2>
+          <h2 className="text-4xl font-serif mb-4 text-stone-900">Planes y Retos</h2>
           <p className="text-stone-600 max-w-2xl mx-auto">
-            Elige el plan que mejor se adapte a tus necesidades y empieza hoy mismo tu transformación.
+            Elige el plan o reto que mejor se adapte a tus necesidades y empieza hoy mismo tu transformación.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <motion.div
               key={index}
               whileHover={{ y: -5 }}
               className={cn(
-                "relative p-8 rounded-3xl border transition-all",
-                plan.recommended 
-                  ? "border-emerald-200 bg-emerald-100/40 shadow-xl shadow-emerald-900/10" 
-                  : "border-emerald-100 bg-emerald-50/50 shadow-sm"
+                "relative p-8 rounded-3xl border transition-all flex flex-col justify-between",
+                plan.isSpecial
+                  ? "border-2 border-emerald-500/80 bg-gradient-to-b from-stone-900 via-stone-900 to-emerald-950 text-white shadow-2xl shadow-emerald-950/30 ring-2 ring-emerald-400/30"
+                  : plan.recommended 
+                  ? "border-emerald-200 bg-emerald-100/40 shadow-xl shadow-emerald-900/10 text-stone-900" 
+                  : "border-emerald-100 bg-emerald-50/50 shadow-sm text-stone-900"
               )}
             >
-              {plan.recommended && (
+              {plan.isSpecial && (
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500 text-stone-950 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-lg shadow-emerald-950/40 flex items-center gap-1.5 whitespace-nowrap">
+                  <Flame size={14} className="text-stone-950 fill-stone-950" /> Plazas Limitadas
+                </span>
+              )}
+              {plan.recommended && !plan.isSpecial && (
                 <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-700 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
                   Más Popular
                 </span>
               )}
-              <div className="mb-8">
-                <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-stone-900">{plan.price}€</span>
-                  <span className="text-stone-500 font-medium">/{plan.period}</span>
+              
+              <div>
+                <div className="mb-6">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h3 className={cn("text-2xl font-serif font-bold", plan.isSpecial ? "text-white" : "text-stone-900")}>
+                      {plan.name}
+                    </h3>
+                    {plan.isSpecial && (
+                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 text-[11px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                        Reto
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-baseline gap-2">
+                    {plan.originalPrice && (
+                      <span className={cn("text-2xl font-bold line-through", plan.isSpecial ? "text-stone-500" : "text-stone-400")}>
+                        {plan.originalPrice}€
+                      </span>
+                    )}
+                    <span className={cn("text-4xl font-bold", plan.isSpecial ? "text-emerald-400" : "text-stone-900")}>
+                      {plan.price}€
+                    </span>
+                    <span className={cn("font-medium", plan.isSpecial ? "text-stone-400" : "text-stone-500")}>
+                      /{plan.period}
+                    </span>
+                  </div>
+
+                  {plan.discountNotice && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-700/60">
+                      <Clock size={14} className="shrink-0 text-emerald-400" />
+                      <span>{plan.discountNotice}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <ul className="space-y-4 mb-8">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-stone-600 text-sm">
-                    <CheckCircle2 className="text-emerald-600 shrink-0" size={18} />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <button 
-                onClick={onSelectPlan}
-                className={cn(
-                  "block w-full text-center py-4 rounded-xl font-bold transition-all",
-                  plan.recommended
-                    ? "bg-emerald-700 text-white hover:bg-emerald-800 shadow-lg shadow-emerald-700/20"
-                    : "bg-stone-900 text-white hover:bg-stone-800"
+
+                {plan.isSpecial && (
+                  <div className="mb-6 p-4 rounded-2xl bg-stone-950/70 border border-stone-800 shadow-inner space-y-2.5 text-xs text-stone-300">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-stone-300 flex items-center gap-1.5">
+                        <Clock size={14} className="text-emerald-400" /> Duración:
+                      </span>
+                      <span className="font-extrabold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/80">
+                        6 semanas
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-stone-300 flex items-center gap-1.5">
+                        <Users size={14} className="text-emerald-400" /> Plazas:
+                      </span>
+                      <span className="font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-800/60">
+                        Limitadas
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-stone-300 flex items-center gap-1.5">
+                        <Clock size={14} className="text-stone-400" /> Límite de inscripción:
+                      </span>
+                      <span className="font-extrabold text-stone-200 bg-stone-900 px-2 py-0.5 rounded-md border border-stone-800">
+                        25 de septiembre
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-stone-300 flex items-center gap-1.5">
+                        <Calendar size={14} className="text-emerald-400" /> Comienzo del reto:
+                      </span>
+                      <span className="font-extrabold text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-800/60">
+                        28 de septiembre
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pt-1 border-t border-stone-800">
+                      <span className="font-semibold text-stone-300 flex items-center gap-1.5">
+                        <Users size={14} className="text-emerald-400" /> Válido para:
+                      </span>
+                      <span className="font-extrabold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/80 text-right">
+                        Nuevas inscripciones o renovaciones
+                      </span>
+                    </div>
+                  </div>
                 )}
-              >
-                {plan.buttonText}
-              </button>
+
+                <ul className="space-y-3.5 mb-8">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className={cn("flex items-start gap-3 text-sm", plan.isSpecial ? "text-stone-200" : "text-stone-600")}>
+                      <CheckCircle2 className={cn("shrink-0 mt-0.5", plan.isSpecial ? "text-emerald-400" : "text-emerald-600")} size={18} />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-2">
+                <button 
+                  onClick={() => onSelectPlan(plan.name)}
+                  className={cn(
+                    "block w-full text-center py-4 rounded-xl font-bold transition-all",
+                    plan.isSpecial
+                      ? "bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500 text-stone-950 font-black hover:brightness-110 shadow-lg shadow-emerald-500/20 active:scale-[0.99]"
+                      : plan.recommended
+                      ? "bg-emerald-700 text-white hover:bg-emerald-800 shadow-lg shadow-emerald-700/20"
+                      : "bg-stone-900 text-white hover:bg-stone-800"
+                  )}
+                >
+                  {plan.buttonText}
+                </button>
+                {plan.isSpecial && (
+                  <button
+                    type="button"
+                    onClick={() => onSelectPlan(plan.name)}
+                    className="mt-2.5 w-full text-center text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center justify-center gap-1"
+                  >
+                    <span>Ver cartel y explicación del reto</span>
+                    <ArrowRight size={13} />
+                  </button>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -1334,22 +1709,44 @@ const Footer = () => {
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isChallengeIntroOpen, setIsChallengeIntroOpen] = React.useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = React.useState(false);
+  const [selectedPlan, setSelectedPlan] = React.useState<string | null>(null);
+
+  const handleSelectPlan = (planName?: string) => {
+    setSelectedPlan(planName || null);
+    if (planName === "Reto TODO O NADA") {
+      setIsChallengeIntroOpen(true);
+    } else {
+      setIsModalOpen(true);
+    }
+  };
 
   return (
     <div className="min-h-screen selection:bg-emerald-100 selection:text-emerald-900">
-      <Navbar onStart={() => setIsModalOpen(true)} />
+      <Navbar onStart={() => {
+        setSelectedPlan(null);
+        setIsModalOpen(true);
+      }} />
       <main>
         <Hero />
         <About />
         <Methodology />
         <Objectives />
-        <Pricing onSelectPlan={() => setIsModalOpen(true)} />
+        <Pricing onSelectPlan={handleSelectPlan} />
         <Transformations />
         <FAQ />
         <Contact />
       </main>
       <Footer />
+      <ChallengeIntroModal
+        isOpen={isChallengeIntroOpen}
+        onClose={() => setIsChallengeIntroOpen(false)}
+        onAdvance={() => {
+          setIsChallengeIntroOpen(false);
+          setIsModalOpen(true);
+        }}
+      />
       <WelcomeModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -1358,6 +1755,7 @@ export default function App() {
       <Survey 
         isOpen={isSurveyOpen} 
         onClose={() => setIsSurveyOpen(false)} 
+        defaultPlan={selectedPlan}
       />
     </div>
   );
