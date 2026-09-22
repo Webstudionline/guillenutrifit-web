@@ -1,0 +1,9 @@
+{
+  "name": "Guille Nutrifit",
+  "description": "Plataforma de nutrición y deporte personalizada por Guille.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
