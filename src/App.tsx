@@ -206,7 +206,7 @@ const Hero = () => {
           >
             <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative z-10 bg-stone-200">
               <img 
-                src="https://i.postimg.cc/hGMWQVqF/5cedd2a0-e8ce-496c-9648-7211ed860676.jpg" 
+                src="https://i.postimg.cc/rmCqtdMc/602ec0f5-a130-4a3a-90af-984cb7742c0a.jpg" 
                 alt="Guillermo García - Nutricionista Deportivo" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -702,15 +702,11 @@ const ChallengeIntroModal = ({
 
         {/* Barra de Acciones Inferior */}
         <div className="p-3 sm:px-6 sm:py-4 bg-stone-900 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-20">
-          <div className="flex items-center gap-2.5 text-xs text-stone-300 w-full sm:w-auto justify-center sm:justify-start">
+          <div className="flex items-center gap-2 text-xs text-stone-300 w-full sm:w-auto justify-center sm:justify-start">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-emerald-400">50€</span>
-              <span className="text-xs line-through text-stone-500">60€</span>
+              <span className="text-xl sm:text-2xl font-black text-emerald-400">60€</span>
+              <span className="text-stone-400 font-medium">/ 6 semanas</span>
             </div>
-            <span className="text-stone-400">•</span>
-            <span className="text-[11px] sm:text-xs text-stone-300 bg-stone-800 px-2.5 py-1 rounded-md border border-stone-700">
-              Descuento hasta el 20 de septiembre
-            </span>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -862,10 +858,8 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: (planName?: string) => void }
     },
     {
       name: "Reto TODO O NADA",
-      price: "50",
-      originalPrice: "60",
+      price: "60",
       period: "6 semanas",
-      discountNotice: "Descuento a 50€ solo hasta el 20 de septiembre",
       features: [
         "Duración de 6 semanas completas",
         "Dietas 100% personalizadas (1 dieta cada 2 semanas)",
@@ -934,11 +928,6 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: (planName?: string) => void }
                   </div>
 
                   <div className="flex items-baseline gap-2">
-                    {plan.originalPrice && (
-                      <span className={cn("text-2xl font-bold line-through", plan.isSpecial ? "text-stone-500" : "text-stone-400")}>
-                        {plan.originalPrice}€
-                      </span>
-                    )}
                     <span className={cn("text-4xl font-bold", plan.isSpecial ? "text-emerald-400" : "text-stone-900")}>
                       {plan.price}€
                     </span>
@@ -946,13 +935,6 @@ const Pricing = ({ onSelectPlan }: { onSelectPlan: (planName?: string) => void }
                       /{plan.period}
                     </span>
                   </div>
-
-                  {plan.discountNotice && (
-                    <div className="mt-3 inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-700/60">
-                      <Clock size={14} className="shrink-0 text-emerald-400" />
-                      <span>{plan.discountNotice}</span>
-                    </div>
-                  )}
                 </div>
 
                 {plan.isSpecial && (
